@@ -1,0 +1,11 @@
+# This is Git's per-user configuration file.
+[user]
+	name = Rastislav Uhliar
+	email = rastislavuhliar123@gmail.com
+	signingkey = 8F1BCF061FF610C0E7D33E2B9DCD341F714164F0
+[gpg]
+	program = /opt/homebrew/bin/gpg
+[commit]
+	gpgsign = true
+[tag]
+	gpgSign = true

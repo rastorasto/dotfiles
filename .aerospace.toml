@@ -61,7 +61,7 @@ outer.right = 5
 
 alt-enter = 'exec-and-forget kitty -d ~'
 # TODO dont forget to change this when moving files elsewhere
-alt-r = "exec-and-forget ~/Documents/config/restore_workspaces.sh"
+alt-r = "exec-and-forget ~/Documents/dotfiles/restore_workspaces.sh"
 # cmd-ctrl-t = "exec-and-forget /usr/bin/shortcuts run \"New reminder :)\""
 
 cmd-e = "exec-and-forget open -a 'Finder'"

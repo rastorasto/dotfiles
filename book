@@ -1,0 +1,126 @@
+#!/bin/bash
+# Create an Obsidian "Books highlights" note from Open Library.
+# Usage: book [-n|--dry-run] [title|author|ISBN]
+#   - ISBN input: precise edition lookup (no picker)
+#   - text input: search, then pick from a numbered list
+set -u
+
+VAULT="${BOOK_VAULT:-/Users/rasto/Library/Mobile Documents/iCloud~md~obsidian/Documents/MAIN}"
+DIR="$VAULT/Books highlights"
+COVERS="$DIR/covers"
+LIMIT=8
+
+dry=0
+if [ "${1:-}" = "-n" ] || [ "${1:-}" = "--dry-run" ]; then dry=1; shift; fi
+
+query="${1:-}"
+if [ -z "$query" ]; then
+  printf "Search title/author or ISBN: "
+  read -r query
+fi
+if [ -z "$query" ]; then echo "No query given."; exit 1; fi
+
+isbn_clean=$(printf '%s' "$query" | tr -d ' -')
+title=""; author=""; subjects=""; publisher=""; year=""; pages=""; isbn=""; coverurl=""
+
+if [ "${#isbn_clean}" -eq 10 ] || [ "${#isbn_clean}" -eq 13 ]; then
+  # --- ISBN mode: Open Library Books API (edition-level) ---
+  bibkey="ISBN:$isbn_clean"
+  data=$(curl -s "https://openlibrary.org/api/books?bibkeys=$bibkey&format=json&jscmd=data")
+  obj=$(printf '%s' "$data" | jq ".\"$bibkey\"")
+  if [ "$obj" = "null" ] || [ -z "$obj" ]; then
+    echo "No Open Library edition for ISBN $isbn_clean. Try a title search."
+    exit 1
+  fi
+  title=$(printf '%s' "$obj" | jq -r '.title // "Unknown"' | tr '"' "'")
+  author=$(printf '%s' "$obj" | jq -r '(.authors // []) | map("\"" + .name + "\"") | join(", ")')
+  publisher=$(printf '%s' "$obj" | jq -r '(.publishers // [])[0].name // ""')
+  year=$(printf '%s' "$obj" | jq -r '.publish_date // ""' | grep -oE '[0-9]{4}' | head -1)
+  pages=$(printf '%s' "$obj" | jq -r '.number_of_pages // ""')
+  isbn=$(printf '%s' "$obj" | jq -r '.identifiers.isbn_13[0] // .identifiers.isbn_10[0] // ""')
+  subjects=$(printf '%s' "$obj" | jq -r '(.subjects // [])[0:4] | map("\"" + .name + "\"") | join(", ")')
+  coverurl=$(printf '%s' "$obj" | jq -r '.cover.large // ""')
+else
+  # --- Search mode: pick a work ---
+  json=$(curl -sG "https://openlibrary.org/search.json" \
+    --data-urlencode "q=$query" \
+    --data-urlencode "limit=$LIMIT" \
+    --data-urlencode "fields=key,title,author_name,first_publish_year,publisher,number_of_pages_median,isbn,cover_i,subject")
+  n=$(printf '%s' "$json" | jq '.docs | length' 2>/dev/null)
+  if [ -z "$n" ] || [ "$n" = "null" ] || [ "$n" -eq 0 ]; then
+    echo "No results for: $query"
+    exit 1
+  fi
+  printf '%s' "$json" | jq -r '.docs | to_entries[] | "  \(.key + 1)) \(.value.title)  -  \((.value.author_name // ["?"]) | join(", "))  (\(.value.first_publish_year // "?"))"'
+  printf "Pick [1-%s] (q to cancel): " "$n"
+  read -r pick
+  case "$pick" in q|Q|"") echo "Canceled."; exit 0 ;; esac
+  case "$pick" in *[!0-9]*) echo "Invalid pick."; exit 1 ;; esac
+  if [ "$pick" -lt 1 ] || [ "$pick" -gt "$n" ]; then echo "Invalid pick."; exit 1; fi
+
+  sel=$(printf '%s' "$json" | jq ".docs[$((pick - 1))]")
+  title=$(printf '%s' "$sel" | jq -r '.title // "Unknown"' | tr '"' "'")
+  author=$(printf '%s' "$sel" | jq -r '(.author_name // []) | map("\"" + . + "\"") | join(", ")')
+  year=$(printf '%s' "$sel" | jq -r '.first_publish_year // ""')
+  publisher=$(printf '%s' "$sel" | jq -r '(.publisher // [])[0] // ""')
+  pages=$(printf '%s' "$sel" | jq -r '.number_of_pages_median // ""')
+  isbn=$(printf '%s' "$sel" | jq -r '(.isbn // []) as $i | (($i | map(select(length == 13)) | .[0]) // $i[0] // "")')
+  subjects=$(printf '%s' "$sel" | jq -r '(.subject // [])[0:4] | map("\"" + . + "\"") | join(", ")')
+  coverid=$(printf '%s' "$sel" | jq -r '.cover_i // ""')
+  if [ -n "$coverid" ]; then coverurl="https://covers.openlibrary.org/b/id/${coverid}-L.jpg"; fi
+fi
+
+base=$(printf '%s' "$title" | tr '/:' '--')
+if [ -z "$base" ]; then base="book"; fi
+
+ts=$(date '+%Y-%m-%d %H:%M:%S')
+notepath="$DIR/$base.md"
+if [ -e "$notepath" ]; then notepath="$DIR/$base $(date +%H%M%S).md"; fi
+
+localcover=""
+coverfile=""
+if [ -n "$coverurl" ]; then
+  slug=$(printf '%s' "$base" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-' | sed 's/^-*//; s/-*$//')
+  if [ -z "$slug" ]; then slug="cover"; fi
+  coverfile="$COVERS/$slug.jpg"
+  localcover="Books highlights/covers/$slug.jpg"
+fi
+
+cover_embed=""
+if [ -n "$localcover" ]; then cover_embed="![[$localcover|150]]"; fi
+
+note=$(cat <<EOF
+---
+tags: books
+title: "$title"
+subtitle: ""
+author: [$author]
+category: [$subjects]
+publisher: $publisher
+publish: $year
+total: $pages
+isbn: $isbn
+cover: $coverurl
+localCover: $localcover
+created: $ts
+updated: $ts
+---
+$cover_embed
+
+# $title
+
+EOF
+)
+
+if [ "$dry" -eq 1 ]; then
+  echo "--- WOULD WRITE: $notepath ---"
+  printf '%s\n' "$note"
+  if [ -n "$coverurl" ]; then echo "--- WOULD DOWNLOAD: $coverurl -> $coverfile ---"; fi
+  exit 0
+fi
+
+mkdir -p "$COVERS"
+printf '%s\n' "$note" > "$notepath"
+if [ -n "$coverurl" ]; then curl -sL "$coverurl" -o "$coverfile"; fi
+echo "Created: $notepath"
+if [ -n "$coverurl" ]; then echo "Cover:   $coverfile"; fi

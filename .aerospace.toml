@@ -166,6 +166,10 @@ if.app-id = 'com.hnc.Discord'
 run = ['move-node-to-workspace Discord']
 
 [[on-window-detected]]
+if.app-id = 'dev.vencord.vesktop'
+run = ['move-node-to-workspace Discord']
+
+[[on-window-detected]]
 if.app-id = 'com.apple.mail'
 run = ['move-node-to-workspace Mail']
 

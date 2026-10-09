@@ -1,2 +1,5 @@
 .DS_Store
 *.bak
+
+# fish secrets
+.config/fish/conf.d/secrets.fish

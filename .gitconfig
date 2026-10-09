@@ -2,10 +2,12 @@
 [user]
 	name = Rastislav Uhliar
 	email = rastislavuhliar123@gmail.com
-	signingkey = 8F1BCF061FF610C0E7D33E2B9DCD341F714164F0
+	signingkey = ~/.ssh/main
 [gpg]
-	program = /opt/homebrew/bin/gpg
+ 	format=ssh
 [commit]
 	gpgsign = true
 [tag]
 	gpgSign = true
+[url "git@forgejo.mnau.org:rasto/"]
+	insteadOf = forgejo:

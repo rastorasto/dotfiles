@@ -11,3 +11,5 @@
 	gpgSign = true
 [url "git@forgejo.mnau.org:rasto/"]
 	insteadOf = forgejo:
+[gpg "ssh"]
+	allowedSignersFile = /Users/rasto/.config/git/allowed_signers

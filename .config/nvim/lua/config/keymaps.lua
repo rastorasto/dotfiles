@@ -66,7 +66,10 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 -- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
 
 -- Vertical twin of <C-w>f: split vertically and edit the file under the cursor
-vim.keymap.set('n', '<C-w>a', '<Cmd>vertical sfind <cfile><CR>', { desc = 'Split vertically and edit file under cursor' })
+-- vim.keymap.set('n', '<C-w>a', '<Cmd>vertical sfind <cfile><CR>', { desc = 'Split vertically and edit file under cursor' })
+
+-- Splits to left instead of right as the above command did
+vim.keymap.set('n', '<C-w>a', '<Cmd>leftabove vertical sfind <cfile><CR>', { desc = 'Split left vertically and edit file under cursor' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`

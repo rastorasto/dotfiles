@@ -19,6 +19,6 @@ require('which-key').setup {
     { '<C-w>gf', desc = 'Edit file under cursor in new tab', mode = { 'n' } },
     { '<C-w>gF', desc = 'Edit file in new tab and jump to line', mode = { 'n' } },
     { '<C-w>i', desc = 'Split & jump to declaration', mode = { 'n' } },
-    { '<C-w>d', desc = 'Split & jump to definition', mode = { 'n' } },
+    { '<C-w>d', desc = 'Show diagnostics under cursor', mode = { 'n' } },
   },
 }

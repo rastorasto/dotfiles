@@ -47,6 +47,8 @@ require('blink.cmp').setup {
     preset = 'default',
     ['<C-space>'] = false,
     ['<C-l>'] = { 'show_documentation', 'hide_documentation', 'fallback' },
+    ['<C-d>'] = { 'scroll_documentation_down', 'fallback' },
+    ['<C-u>'] = { 'scroll_documentation_up', 'fallback' },
 
     -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
     --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps

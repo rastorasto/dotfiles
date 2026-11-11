@@ -11,6 +11,7 @@ alias ff='fastfetch'
 alias vim='nvim'
 #alias cat='bat --paging=never --style=plain'
 alias main='cd "/Users/rasto/Library/Mobile Documents/iCloud~md~obsidian/Documents/MAIN"'
+alias school='cd "/Users/rasto/Library/Mobile Documents/iCloud~md~obsidian/Documents/MAIN/01_4bit-winter/"'
 
 # opencode
 fish_add_path /Users/rasto/.opencode/bin

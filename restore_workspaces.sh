@@ -6,12 +6,12 @@ while IFS='|' read -r app id; do
   case "$app" in
     Books)              ws=Books ;;
     Discord|Vesktop)    ws=Discord ;;
-    Finder)             ws=Finder ;;
+    Finder|Preview)             ws=Finder ;;
     Mail)               ws=Mail ;;
-    Music)              ws=Music ;;
+    Music|Spotify)              ws=Music ;;
     Obsidian)           ws=Obsidian ;;
     VLC)                ws=VLC ;;
-    Zed|Code|kitty)     ws=Zed ;;
+    Zed|Code|kitty|Claude)     ws=Zed ;;
     Firefox)            ws=Firefox ;;
     Calendar|Reminders) ws=CalRem ;;
     *) continue ;;

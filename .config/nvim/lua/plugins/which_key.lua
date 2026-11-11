@@ -1,24 +1,20 @@
 local gh = require('config.pack').gh
 
--- Useful plugin to show you pending keybinds.
+-- Popup listing the keys that can follow what you just pressed.
 vim.pack.add { gh 'folke/which-key.nvim' }
 require('which-key').setup {
-  -- Delay between pressing a key and opening which-key (milliseconds)
   delay = 0,
   icons = { mappings = vim.g.have_nerd_font },
-  -- Document existing key chains
   spec = {
-    { '<leader>s', group = '[S]earch', mode = { 'n', 'v' } },
-    { '<leader>t', group = '[T]oggle' },
-    { '<leader>u', group = '[U]I' },
-    { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } }, -- Enable gitsigns recommended keymaps first
-    { 'gr', group = 'LSP Actions', mode = { 'n' } },
-    -- Built-in <C-w> file commands the default which-key window preset omits
-    { '<C-w>f', desc = 'Split & edit file under cursor', mode = { 'n' } },
-    { '<C-w>F', desc = 'Split & edit file and jump to line', mode = { 'n' } },
-    { '<C-w>gf', desc = 'Edit file under cursor in new tab', mode = { 'n' } },
-    { '<C-w>gF', desc = 'Edit file in new tab and jump to line', mode = { 'n' } },
-    { '<C-w>i', desc = 'Split & jump to declaration', mode = { 'n' } },
-    { '<C-w>d', desc = 'Show diagnostics under cursor', mode = { 'n' } },
+    { '<leader>s', group = 'Search', mode = { 'n', 'v' } },
+    { '<leader>t', group = 'Toggle' },
+    { '<leader>u', group = 'UI' },
+    { 'gr', group = 'LSP' },
+    { '<C-w>f', desc = 'Split & edit file under cursor' },
+    { '<C-w>F', desc = 'Split & edit file and jump to line' },
+    { '<C-w>gf', desc = 'Edit file under cursor in new tab' },
+    { '<C-w>gF', desc = 'Edit file in new tab and jump to line' },
+    { '<C-w>i', desc = 'Split & jump to declaration' },
+    { '<C-w>d', desc = 'Show diagnostics under cursor' },
   },
 }

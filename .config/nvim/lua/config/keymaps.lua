@@ -1,93 +1,26 @@
--- ============================================================
--- SECTION 2: KEYMAPS
--- basic keymaps
--- ============================================================
+local map = vim.keymap.set
 
--- [[ Basic Keymaps ]]
---  See `:help vim.keymap.set()`
+map('n', '<Esc>', '<cmd>nohlsearch<CR>', { desc = 'Clear search highlight' })
+map('n', '<leader>e', vim.cmd.Ex, { desc = 'File explorer (netrw)' })
+map('n', '<leader>cd', '<cmd>cd %:h<CR>', { desc = 'cd to current file dir' })
+map('n', '<leader>ut', '<cmd>TransparentToggle<CR>', { desc = 'Toggle transparency' })
+map('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
--- Clear highlights on search when pressing <Esc> in normal mode
---  See `:help hlsearch`
-vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+-- Windows: <C-hjkl> to move between splits
+map('n', '<C-h>', '<C-w><C-h>', { desc = 'Window left' })
+map('n', '<C-l>', '<C-w><C-l>', { desc = 'Window right' })
+map('n', '<C-j>', '<C-w><C-j>', { desc = 'Window down' })
+map('n', '<C-k>', '<C-w><C-k>', { desc = 'Window up' })
+map('n', '<C-w>a', '<Cmd>leftabove vertical sfind <cfile><CR>', { desc = 'Split left & edit file under cursor' })
 
--- Diagnostic Config & Keymaps
---  See `:help vim.diagnostic.Opts`
+-- Diagnostics: [d / ]d jump (and open the float), <leader>q list them
 vim.diagnostic.config {
-  update_in_insert = false,
   severity_sort = true,
   float = { border = 'rounded', source = 'if_many' },
   underline = { severity = { min = vim.diagnostic.severity.WARN } },
-
-  -- Can switch between these as you prefer
-  virtual_text = true, -- Text shows up at the end of the line
-  virtual_lines = false, -- Text shows up underneath the line, with virtual lines
-
-  -- Auto open the float, so you can easily read the errors when jumping with `[d` and `]d`
+  virtual_text = true,
   jump = {
-    on_jump = function(_, bufnr)
-      vim.diagnostic.open_float {
-        bufnr = bufnr,
-        scope = 'cursor',
-        focus = false,
-      }
-    end,
+    on_jump = function(_, bufnr) vim.diagnostic.open_float { bufnr = bufnr, scope = 'cursor', focus = false } end,
   },
 }
-
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
-
--- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
--- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
--- is not what someone will guess without a bit more experience.
---
--- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
--- or just use <C-\><C-n> to exit terminal mode
-vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
-
--- TIP: Disable arrow keys in normal mode
--- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
--- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
--- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
--- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
-
--- Keybinds to make split navigation easier.
---  Use CTRL+<hjkl> to switch between windows
---
---  See `:help wincmd` for a list of all window commands
-vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
-
--- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
--- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
--- vim.keymap.set("n", "<C-S-l>", "<C-w>L", { desc = "Move window to the right" })
--- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
--- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
-
--- Vertical twin of <C-w>f: split vertically and edit the file under the cursor
--- vim.keymap.set('n', '<C-w>a', '<Cmd>vertical sfind <cfile><CR>', { desc = 'Split vertically and edit file under cursor' })
-
--- Splits to left instead of right as the above command did
-vim.keymap.set('n', '<C-w>a', '<Cmd>leftabove vertical sfind <cfile><CR>', { desc = 'Split left vertically and edit file under cursor' })
-
--- [[ Basic Autocommands ]]
---  See `:help lua-guide-autocommands`
-
--- Highlight when yanking (copying) text
---  Try it with `yap` in normal mode
---  See `:help vim.hl.on_yank()`
-vim.api.nvim_create_autocmd('TextYankPost', {
-  desc = 'Highlight when yanking (copying) text',
-  group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
-  callback = function() vim.hl.on_yank() end,
-})
-
--- Open :Ex
-vim.keymap.set('n', '<leader>e', vim.cmd.Ex)
-
--- change pwd to current dir
-vim.keymap.set('n', '<leader>cd', '<cmd>cd %:h<cr>', { desc = 'Change cwd to current file dir' })
-
--- Toggle global transparency (see plugins/colorscheme.lua)
-vim.keymap.set('n', '<leader>ut', '<cmd>TransparentToggle<cr>', { desc = '[U]I [T]oggle transparency' })
+map('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Diagnostics list' })

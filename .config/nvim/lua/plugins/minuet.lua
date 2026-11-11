@@ -8,13 +8,10 @@ require('minuet').setup {
   provider = 'openai_compatible',
   provider_options = {
     openai_compatible = {
-      api_key = 'OMNIROUTE_API_KEY',            -- env var NAME, never the literal key
+      api_key = 'OMNIROUTE_API_KEY',
       end_point = 'https://omni.mnau.org/v1/chat/completions',
-      -- model = 'litellm/deepseek-v4.1-flash',
-      model = 'litellm/mini',
-      name = 'OmniRoute',
-      stream = true,
-      optional = { max_tokens = 128 },
+      model = 'metacentrum/gpt-oss-120b',
+      optional = { max_tokens = 512, reasoning_effort = 'minimal' },
     },
   },
   context_window = 2000,
